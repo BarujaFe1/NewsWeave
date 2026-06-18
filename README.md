@@ -623,6 +623,25 @@ First run: open the frontend, complete the onboarding quiz, and on the briefing
 screen click **"Buscar Notícias"** to trigger RSS ingestion. The first ingestion
 takes a few seconds as the configured feeds are parsed.
 
+### Offline demo (no RSS ingestion)
+
+To evaluate the product without hitting live RSS feeds (e.g. a cold demo on a
+recruiter's machine), seed the SQLite database with a deterministic, recent
+synthetic dataset:
+
+```bash
+python scripts/seed_demo.py --with-demo-user
+```
+
+This inserts ~30 articles across all 8 categories (all published within the
+ranker's 48h window) and optionally creates a demo profile. After seeding,
+just complete the onboarding quiz in the frontend — the briefing is generated
+from the seeded articles, no ingestion required. Run `--wipe` to remove the
+demo data. See `python scripts/seed_demo.py --help`.
+
+To inspect the configured RSS feeds without ingesting, use
+`python scripts/seed_sources.py`.
+
 ---
 
 ## 📸 Demo and screenshots / Demo e screenshots
