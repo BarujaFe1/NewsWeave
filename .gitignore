@@ -1,0 +1,12 @@
+.env
+.env.local
+*.db
+node_modules/
+.next/
+__pycache__/
+*.pyc
+*.egg-info/
+npm.log
+npm.err
+uvicorn.log
+uvicorn.err

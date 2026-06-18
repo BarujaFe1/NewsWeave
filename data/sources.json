@@ -1,0 +1,36 @@
+{
+  "economia": [
+    "https://www.infomoney.com.br/feed/",
+    "https://www.bloomberglinea.com.br/feed/",
+    "https://br.investing.com/rss/news.rss"
+  ],
+  "politica": [
+    "https://oantagonista.com.br/feed/",
+    "https://www.cnnbrasil.com.br/feed/",
+    "https://rss.folha.uol.com.br/poder/rss091.xml"
+  ],
+  "tech": [
+    "https://canaltech.com.br/rss/",
+    "https://olhardigital.com.br/feed/",
+    "https://tecnoblog.net/feed/"
+  ],
+  "games": [
+    "https://br.ign.com/feed.xml",
+    "https://www.gamespot.com/feeds/mashup/"
+  ],
+  "esportes": [
+    "https://ge.globo.com/dynamo/ge/rss2.xml",
+    "https://www.uol.com.br/esporte/futebol/rss.xml"
+  ],
+  "mundo": [
+    "https://www.bbc.com/portuguese/topics/clm8nl8ervvt.rss",
+    "https://www.reuters.com/tools/rss"
+  ],
+  "saude": [
+    "https://saude.abril.com.br/feed/",
+    "https://www.uol.com.br/vivabem/rss.xml"
+  ],
+  "local_sp": [
+    "https://saocarlosagora.com.br/feed/"
+  ]
+}

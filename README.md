@@ -16,11 +16,11 @@
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/status-project%20definition-0f766e.svg" alt="Status project definition" />
+    <img src="https://img.shields.io/badge/status-MVP%20local%20demo-0f766e.svg" alt="Status MVP local demo" />
     <img src="https://img.shields.io/badge/scope-MVP%20focused-1f2937.svg" alt="MVP focused" />
     <img src="https://img.shields.io/badge/frontend-Next.js-black.svg?logo=next.js&logoColor=white" alt="Next.js" />
     <img src="https://img.shields.io/badge/backend-FastAPI-009688.svg?logo=fastapi&logoColor=white" alt="FastAPI" />
-    <img src="https://img.shields.io/badge/database-PostgreSQL-4169E1.svg?logo=postgresql&logoColor=white" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/database-SQLite-003B57.svg?logo=sqlite&logoColor=white" alt="SQLite" />
     <img src="https://img.shields.io/badge/license-MIT-111827.svg" alt="MIT License" />
   </p>
 
@@ -269,34 +269,36 @@ It should show the ability to:
 
 ## 🛠️ Stack / Tecnologias
 
-### Frontend
+### Frontend (implementado)
 
-- **Next.js**
-- **TypeScript**
-- **Tailwind CSS**
+- **Next.js 16** (App Router)
+- **React 19**
+- **TypeScript** (strict)
+- **Tailwind CSS v4**
+- **framer-motion**, **lucide-react**
 
-### Backend
+### Backend (implementado)
 
 - **FastAPI**
-- **Python**
-- **SQLAlchemy**
-- **Alembic**
+- **Python 3.12**
+- **SQLAlchemy 2.0**
+- **feedparser** (RSS fetching + metadata parsing)
+- **python-Levenshtein** (similaridade de headline para deduplicação)
+- **Pydantic v2** (schemas de request/response)
 
-### Data
+### Data (implementado)
 
-- **PostgreSQL**
+- **SQLite** (em arquivo, auto-criado via `Base.metadata.create_all`)
 
-### Ingestion and parsing
+### Planejado, ainda não implementado
 
-- **feedparser**
-- **trafilatura**
-- **BeautifulSoup**
-- **selectolax**
+- **PostgreSQL** como alvo de deploy (o código já abstrai a URL via `DATABASE_URL`).
+- **Alembic** migrations (dependência instalada; o schema hoje sobe via `create_all`).
+- **trafilatura / BeautifulSoup / selectolax** para parsing de corpo do artigo (o MVP ingere só metadados RSS + snippets de resumo).
+- **Docker Compose** e **GitHub Actions** (CI) fora do escopo da demo local atual.
 
 ### Supporting tools
 
-- **Docker Compose**
-- **GitHub Actions**
 - **Conventional Commits**
 - **Markdown documentation**
 
@@ -366,18 +368,21 @@ Dashboard / Briefing UI
 
 ## 🧬 Modelo de dados / Data model
 
-Planned core entities:
+### Entidades implementadas
 
-- `users` or local profile configuration;
+- `users` — perfil local (~50 campos de preferência usados pelas regras de ranking).
+- `articles` — itens ingeridos via RSS (title, link, source, summary, category, published_at, content_hash).
+- `briefings` — snapshot diário persistido (top_articles, radar_bullets, stoic_quote, armazenados como JSON).
+
+### Entidades planejadas (ainda não implementadas)
+
 - `sources`;
 - `source_categories`;
-- `user_preferences`;
+- `user_preferences` (como tabela separada);
 - `topics`;
-- `articles`;
 - `article_topics`;
-- `briefings`;
-- `briefing_items`;
-- `ingestion_runs`.
+- `briefing_items` (como tabela separada);
+- `ingestion_runs` (auditoria de runs / rastreamento de falhas).
 
 ### Article fields
 
@@ -441,51 +446,47 @@ The goal is to reduce repeated coverage without overengineering a full semantic 
 
 ## 📁 Repository structure / Estrutura do repositório
 
-```txt
+```
 newsweave/
-├── frontend/
-│   ├── app/
-│   ├── components/
-│   ├── lib/
-│   ├── public/
-│   └── package.json
 ├── backend/
 │   ├── app/
-│   │   ├── api/
-│   │   ├── models/
-│   │   ├── schemas/
-│   │   ├── ingestion/
-│   │   ├── parsing/
-│   │   ├── ranking/
-│   │   ├── dedup/
-│   │   └── briefing/
-│   ├── tests/
-│   ├── scripts/
-│   └── migrations/
-├── scripts/
+│   │   ├── main.py            # FastAPI app + CORS + create_all
+│   │   ├── database.py        # SQLAlchemy engine + session
+│   │   ├── models/            # article.py, briefing.py, user.py
+│   │   ├── routers/           # profile, ingest, briefing
+│   │   └── services/          # ingestor, deduplicator, ranker, generator
+│   ├── alembic/               # scaffolded (migrations pending)
+│   ├── newsweave.db           # SQLite (gitignored)
+│   └── requirements.txt
+├── frontend/
+│   ├── app/                   # routes: / , /onboarding , /briefing
+│   ├── components/            # BriefingCard, QuizCard, ProgressBar, ...
+│   ├── lib/                   # api.ts, profile.ts
+│   ├── public/
+│   └── package.json
 ├── data/
-├── docs/
-│   ├── product-requirements.md
-│   ├── architecture.md
-│   ├── roadmap.md
-│   ├── data-model.md
-│   ├── api-contract.md
-│   └── case-study.md
-├── assets/
-├── .github/
-├── README.md
-├── LICENSE
-├── CHANGELOG.md
-├── CONTRIBUTING.md
+│   └── sources.json           # 19 feeds RSS em 8 categorias
+├── scripts/
+│   ├── run_ingest.ps1
+│   ├── seed_sources.py
+│   └── test_flow.py
 ├── .env.example
-└── docker-compose.yml
+├── .gitignore
+├── start.bat                  # sobe backend (8001) + frontend (3000) + browser
+├── LICENSE
+├── README.md
+└── icon.png
 ```
+
+Planejado (ainda não no repositório): `docs/`, `assets/`, `.github/` (CI),
+`docker-compose.yml`, `CHANGELOG.md`, `CONTRIBUTING.md`, `backend/tests/` e um
+`alembic.ini` com migrations reais. O README será atualizado conforme estes entrarem.
 
 ---
 
 ## 🗺️ Roadmap
 
-### Phase 0 — Foundation
+### Phase 0 — Foundation &#10003; (done — definition, repo, data model draft)
 
 - [ ] Finalize product definition.
 - [ ] Create repository structure.
@@ -493,7 +494,7 @@ newsweave/
 - [ ] Define data model and API contract.
 - [ ] Create GitHub issues and milestones.
 
-### Phase 1 — Technical baseline
+### Phase 1 — Technical baseline &#10003; (done — SQLite instead of PostgreSQL; migrations/CI pending)
 
 - [ ] Initialize frontend.
 - [ ] Initialize backend.
@@ -501,7 +502,7 @@ newsweave/
 - [ ] Create initial models and migrations.
 - [ ] Add first CI checks.
 
-### Phase 2 — Core flow
+### Phase 2 — Core flow &#10003; (working — ingest from `data/sources.json`, profile, ranking, briefing)
 
 - [ ] Create source management.
 - [ ] Define user preferences.
@@ -509,7 +510,7 @@ newsweave/
 - [ ] Normalize and store news items.
 - [ ] Generate first briefing.
 
-### Phase 3 — Relevance and quality
+### Phase 3 — Relevance and quality (partial — dedup + ranking rules exist; explanations/tests/ingestion hardening pending)
 
 - [ ] Deduplicate articles.
 - [ ] Improve ranking rules.
@@ -517,7 +518,7 @@ newsweave/
 - [ ] Add tests for core behavior.
 - [ ] Harden ingestion flow.
 
-### Phase 4 — Product polish
+### Phase 4 — Product polish (partial — dark UI, loading/empty states done; screenshots pending)
 
 - [ ] Improve UI.
 - [ ] Add dark mode.
@@ -525,7 +526,7 @@ newsweave/
 - [ ] Add loading and empty states.
 - [ ] Create demo-ready screenshots.
 
-### Phase 5 — Public release
+### Phase 5 — Public release (in progress — repository being made public now)
 
 - [ ] Finalize documentation.
 - [ ] Prepare public story.
@@ -537,15 +538,24 @@ newsweave/
 
 ## 📌 Status
 
-**Current status:** project definition and repository preparation.
+**Current status:** MVP technical implementation — local demo available.
 
-At this stage, the focus is on:
+The end-to-end loop works: a profile is created via the onboarding quiz, RSS
+feeds are ingested, headlines are deduplicated and ranked against the user
+preferences, and a persisted daily briefing (top headlines + radar) is rendered
+in the Next.js UI.
 
-- clarifying the MVP;
-- locking the architecture;
-- preparing the repository structure;
-- writing core documentation;
-- avoiding premature implementation.
+What is in place:
+
+- FastAPI backend with `profile`, `ingest`, `briefing` and `health` endpoints;
+- SQLite persistence (auto-created via `Base.metadata.create_all`);
+- Rule-based ranking + Levenshtein-based deduplication;
+- Next.js 16 dark-mode briefing UI (landing, onboarding quiz, briefing).
+
+What is next (kept out of this commit intentionally):
+
+- Alembic migrations, automated tests, CI, Docker, public screenshots and the
+  `docs/` folder described above as planned.
 
 ---
 
@@ -553,25 +563,27 @@ At this stage, the focus is on:
 
 ## 🚀 Quick Start / Início rápido
 
-The project will be organized to run locally with:
+Requirements: **Python 3.12+** and **Node.js 18+** (the repo was built with
+Python 3.12.10 and Node 24). The backend uses **SQLite**, so there is no external
+database to provision — the DB file is auto-created on first run.
 
-- Node.js for the frontend;
-- Python for the backend;
-- PostgreSQL for persistence;
-- Docker Compose for local services.
+### Option A — one command (Windows)
 
-### Expected local workflow
+`start.bat` at the repo root launches the backend on port **8001** and the
+frontend on port **3000**, then opens the browser:
 
-```bash
-git clone https://github.com/BarujaFe1/newsweave.git
-cd newsweave
-docker compose up -d
+```bat
+start.bat
 ```
 
-Backend:
+### Option B — manual (two terminals)
+
+Backend (terminal 1):
 
 ```bash
-cd backend
+git clone https://github.com/BarujaFe1/NewsWeave.git
+cd NewsWeave/backend
+
 python -m venv .venv
 
 # Windows
@@ -581,27 +593,35 @@ python -m venv .venv
 source .venv/bin/activate
 
 pip install -r requirements.txt
-alembic upgrade head
-uvicorn app.main:app --reload
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8001 --reload
 ```
 
-Frontend:
+The SQLite schema is auto-created on startup via `Base.metadata.create_all` —
+no migration step is needed for the V1 local demo.
+
+Frontend (terminal 2):
 
 ```bash
-cd frontend
+cd NewsWeave/frontend
 npm install
 npm run dev
 ```
 
-Planned access:
+Local access:
 
 ```txt
-Frontend: http://localhost:3000
-Backend:  http://localhost:8000
-API Docs: http://localhost:8000/docs
+Frontend:  http://localhost:3000
+Backend:   http://localhost:8001
+API Docs:  http://localhost:8001/docs
 ```
 
-Setup instructions should be refined as implementation begins.
+Environment variables: the backend reads `DATABASE_URL` (defaults to
+`sqlite:///./newsweave.db`) and the frontend reads `NEXT_PUBLIC_API_URL`
+(defaults to `http://localhost:8001`). See `.env.example`.
+
+First run: open the frontend, complete the onboarding quiz, and on the briefing
+screen click **"Buscar Notícias"** to trigger RSS ingestion. The first ingestion
+takes a few seconds as the configured feeds are parsed.
 
 ---
 
