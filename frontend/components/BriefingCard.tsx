@@ -55,7 +55,7 @@ export default function BriefingCard({
             <span>{source}</span>
             <div className="flex items-center gap-3">
               <span className="text-[#0A84FF] text-[11px]">
-                {relevanceScore}% relevante
+                score {Math.round(relevanceScore)}
               </span>
               <a
                 href={link}

@@ -17,6 +17,21 @@ STOIC_QUOTES = [
 ]
 
 
+def shape_briefing_response(b: "Briefing", user: User) -> dict:
+    """Render a stored Briefing row into the API response shape used by the UI.
+
+    Keeps a single source of truth for the response so a reused (idempotent)
+    briefing and a freshly built one look identical to the frontend."""
+    return {
+        "user_id": user.id,
+        "date": b.date.isoformat() if b.date else datetime.now().isoformat(),
+        "greeting": f"Bom dia, {user.name or 'Assinante'}",
+        "stoic_quote": b.stoic_quote,
+        "top_15": b.top_articles or [],
+        "radar": b.radar_bullets or [],
+    }
+
+
 def build_briefing(db: Session, user: User) -> dict:
     ranked = rank_articles_for_user(db, user)
 
@@ -54,11 +69,4 @@ def build_briefing(db: Session, user: User) -> dict:
     db.add(briefing_entry)
     db.commit()
 
-    return {
-        "user_id": user.id,
-        "date": datetime.now().isoformat(),
-        "greeting": f"Bom dia, {user.name or 'Assinante'}",
-        "stoic_quote": stoic_quote,
-        "top_15": top_15,
-        "radar": radar,
-    }
+    return shape_briefing_response(briefing_entry, user)

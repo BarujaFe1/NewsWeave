@@ -1,5 +1,5 @@
 # Trigger de ingestão manual
-$apiUrl = "http://localhost:8000/api/ingest"
+$apiUrl = "http://localhost:8001/api/ingest"
 Write-Host "Disparando ingestão em $apiUrl..."
 try {
     $response = Invoke-RestMethod -Uri $apiUrl -Method Post
